@@ -7,8 +7,6 @@ import argparse
 import random
 import sys
 import time
-import traceback
-from pathlib import Path
 
 from box_game import BoxGame
 from canvas import Canvas, Frame
@@ -22,21 +20,6 @@ from ui import (
 from village import LEVELS, Run
 
 FPS = 30
-
-
-def install_crash_log() -> None:
-    """把未捕获异常写到本地日志，方便现场排查。"""
-    log = Path.home() / ".local" / "share" / "lug-village" / "crash.log"
-
-    def hook(exc_type, exc, tb) -> None:
-        try:
-            log.parent.mkdir(parents=True, exist_ok=True)
-            log.write_text("".join(traceback.format_exception(exc_type, exc, tb)), encoding="utf-8")
-        except OSError:
-            pass
-        sys.__excepthook__(exc_type, exc, tb)
-
-    sys.excepthook = hook
 
 
 def make_game(key: str, w: int, h: int, rng: random.Random):
@@ -53,7 +36,6 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv or sys.argv[1:])
     rng = random.Random(args.seed if args.seed is not None else random.randrange(1_000_000))
 
-    install_crash_log()
     try:
         term = Terminal()
     except Exception as e:
