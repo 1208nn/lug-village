@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+cd "$(dirname "$0")"
+if command -v mise >/dev/null 2>&1; then
+  exec mise exec -- uv run python main.py "$@"
+fi
+if command -v uv >/dev/null 2>&1; then
+  exec uv run python main.py "$@"
+fi
+echo "需要 uv 或 mise 才能启动。" >&2
+exit 1
